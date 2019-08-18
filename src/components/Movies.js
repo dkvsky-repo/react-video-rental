@@ -14,9 +14,15 @@ export default class Movies extends Component {
   };
 
   render() {
+    const { length: count } = this.state.movies;
+
+    if (count === 0) {
+      return <p>No movies in the database.</p>;
+    }
     return (
       <React.Fragment>
         <h1>Movie inventory</h1>
+        <p>Available movies: {count}.</p>
         <table className='table'>
           <thead>
             <tr>
