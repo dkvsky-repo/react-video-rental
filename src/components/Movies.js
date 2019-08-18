@@ -21,7 +21,7 @@ export default class Movies extends Component {
     }
     return (
       <React.Fragment>
-        <h1>Movie inventory</h1>
+        <h1>Movie rental app</h1>
         <p>Available movies: {count}.</p>
         <table className='table'>
           <thead>
