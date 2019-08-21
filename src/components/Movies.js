@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { getMovies } from '../services/fakeMovieService';
+import Like from './common/Like';
 
 export default class Movies extends Component {
   state = {
@@ -13,6 +14,14 @@ export default class Movies extends Component {
     this.setState({ movies });
   };
 
+  handleLike = movie => {
+    const moviesCopy = [...this.state.movies];
+    const index = moviesCopy.indexOf(movie);
+    moviesCopy[index] = { ...moviesCopy[index] };
+    moviesCopy[index].liked = !moviesCopy[index].liked;
+    this.setState({ movies: moviesCopy });
+  };
+
   render() {
     const { length: count } = this.state.movies;
 
@@ -23,13 +32,14 @@ export default class Movies extends Component {
       <React.Fragment>
         <h1>Movie rental app</h1>
         <p>Available movies: {count}.</p>
-        <table className='table'>
+        <table className="table">
           <thead>
             <tr>
               <th>Title</th>
               <th>Genre</th>
               <th>Stock</th>
               <th>Rate</th>
+              <th />
               <th />
             </tr>
           </thead>
@@ -41,8 +51,14 @@ export default class Movies extends Component {
                 <td>{movie.numberInStock}</td>
                 <td>{movie.dailyRentalRate}</td>
                 <td>
+                  <Like
+                    liked={movie.liked}
+                    onClick={() => this.handleLike(movie)}
+                  />
+                </td>
+                <td>
                   <button
-                    className='btn btn-danger btn-sm'
+                    className="btn btn-danger btn-sm"
                     onClick={() => this.handleDelete(movie)}
                   >
                     Delete
