@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { getMovies } from '../services/fakeMovieService';
 import Like from './common/Like';
+import Pagination from './common/Pagination';
+import { paginate } from '../utils/paginate';
 
 export default class Movies extends Component {
   state = {
-    movies: getMovies()
+    movies: getMovies(),
+    pageSize: 4,
+    currentPage: 1
   };
 
   handleDelete = movie => {
@@ -22,12 +26,24 @@ export default class Movies extends Component {
     this.setState({ movies: moviesCopy });
   };
 
+  handlePageChange = page => {
+    this.setState({ currentPage: page });
+  };
+
+  handlePagination = movie => {
+    console.log('clicking pagination thingy');
+  };
+
   render() {
     const { length: count } = this.state.movies;
+    const { pageSize, currentPage, movies: allmovies } = this.state;
 
     if (count === 0) {
       return <p>No movies in the database.</p>;
     }
+
+    const movies = paginate(allmovies, currentPage, pageSize);
+
     return (
       <React.Fragment>
         <h1>Movie rental app</h1>
@@ -44,7 +60,7 @@ export default class Movies extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.movies.map(movie => (
+            {movies.map(movie => (
               <tr key={movie._id}>
                 <td>{movie.title}</td>
                 <td>{movie.genre.name}</td>
@@ -68,6 +84,12 @@ export default class Movies extends Component {
             ))}
           </tbody>
         </table>
+        <Pagination
+          itemsCount={count}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          onPageChange={this.handlePageChange}
+        />
       </React.Fragment>
     );
   }
