@@ -30,10 +30,6 @@ export default class Movies extends Component {
     this.setState({ currentPage: page });
   };
 
-  handlePagination = movie => {
-    console.log('clicking pagination thingy');
-  };
-
   render() {
     const { length: count } = this.state.movies;
     const { pageSize, currentPage, movies: allmovies } = this.state;
