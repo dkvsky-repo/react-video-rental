@@ -10,7 +10,6 @@ const ListGroup = props => {
   } = props;
   return (
     <ul class="list-group">
-      {/* <li class="list-group-item">All genres</li> */}
       {items.map(item => (
         <li
           key={item[valueProperty]}
