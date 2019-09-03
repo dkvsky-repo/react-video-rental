@@ -2,5 +2,6 @@
   "editor.fontFamily": "dm, Menlo, Monaco, 'Courier New', monospace",
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
-  "emmet.triggerExpansionOnTab": true
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showSuggestionsAsSnippets": true
 }
