@@ -11,11 +11,12 @@ export default class Movies extends Component {
     movies: [],
     genres: [],
     pageSize: 4,
-    currentPage: 1
+    currentPage: 1,
+    sortColumn: { path: 'title', order: 'asc' }
   };
 
   componentDidMount() {
-    const genres = [{ name: 'All Genres' }, ...getGenres()];
+    const genres = [{ _id: '', name: 'All Genres' }, ...getGenres()];
     this.setState({ movies: getMovies(), genres });
   }
 
@@ -42,11 +43,16 @@ export default class Movies extends Component {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
+  handleSort = sortColumn => {
+    this.setState({ sortColumn });
+  };
+
   render() {
     const { length: count } = this.state.movies;
     const {
       pageSize,
       currentPage,
+      sortColumn,
       selectedGenre,
       movies: allMovies
     } = this.state;
@@ -59,7 +65,21 @@ export default class Movies extends Component {
       selectedGenre && selectedGenre._id
         ? allMovies.filter(m => m.genre._id === selectedGenre._id)
         : allMovies;
-    const movies = paginate(filtered, currentPage, pageSize);
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortColumn.order === 'desc') {
+        return a[sortColumn.path] < b[sortColumn.path] ||
+          a[sortColumn.path].name < b[sortColumn.path].name
+          ? 1
+          : -1;
+      }
+      return a[sortColumn.path] > b[sortColumn.path] ||
+        a[sortColumn.path].name > b[sortColumn.path].name
+        ? 1
+        : -1;
+    });
+
+    const movies = paginate(sorted, currentPage, pageSize);
 
     return (
       <main className="container">
@@ -76,8 +96,10 @@ export default class Movies extends Component {
             <p>Available movies: {filtered.length}.</p>
             <MoviesTable
               movies={movies}
+              sortColumn={sortColumn}
               onLike={this.handleLike}
               onDelete={this.handleDelete}
+              onSort={this.handleSort}
             />
             <Pagination
               itemsCount={filtered.length}
