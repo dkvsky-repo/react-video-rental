@@ -1,29 +1,26 @@
 import React, { Component } from 'react';
-import Like from './Like';
 
 export default class TableBody extends Component {
+  createKey = (item, column) => {
+    return item._id + (column.path || column.key);
+  };
+
+  renderCell = (item, column) => {
+    if (column.content) return column.content(item);
+    return column.path !== 'genre' ? item[column.path] : item[column.path].name;
+  };
   render() {
-    const { movies, onLike, onDelete } = this.props;
+    const { data, columns } = this.props;
 
     return (
       <tbody>
-        {movies.map(movie => (
-          <tr key={movie._id}>
-            <td>{movie.title}</td>
-            <td>{movie.genre.name}</td>
-            <td>{movie.numberInStock}</td>
-            <td>{movie.dailyRentalRate}</td>
-            <td>
-              <Like liked={movie.liked} onClick={() => onLike(movie)} />
-            </td>
-            <td>
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => onDelete(movie)}
-              >
-                Delete
-              </button>
-            </td>
+        {data.map(item => (
+          <tr key={item._id}>
+            {columns.map(col => (
+              <td key={this.createKey(item, col)}>
+                {this.renderCell(item, col)}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
