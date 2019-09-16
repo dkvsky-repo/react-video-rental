@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Joi from '@hapi/joi';
 import Input from './common/Input';
 
 export default class LoginForm extends Component {
@@ -7,19 +8,58 @@ export default class LoginForm extends Component {
     errors: {}
   };
 
-  // Super basic validation. This will be improved.
+  // schema = Joi.object({
+  //   username: Joi.string()
+  //     .required()
+  //     .label('Username'),
+  //   password: Joi.string()
+  //     .required()
+  //     .label('Password')
+  // });
+
+  usernameSchema = Joi.object({
+    username: Joi.string()
+      .required()
+      .label('Username')
+  });
+
+  passwordSchema = Joi.object({
+    password: Joi.string()
+      .required()
+      .label('Password')
+  });
+
+  combinedSchema = this.usernameSchema.concat(this.passwordSchema);
+
   validate = () => {
+    const { username, password } = this.state.account;
+    const options = { abortEarly: false };
+    const { error } = this.combinedSchema.validate(
+      {
+        username: username,
+        password: password
+      },
+      options
+    );
+
+    if (!error) return null;
+    // map Joi errors into errors object
     const errors = {};
-    const { account } = this.state;
+    error.details.map(item => {
+      // Save input name and its error message value
+      // based on return from Joi validation.
+      return (errors[item.path[0]] = item.message);
+    });
+    return errors;
+  };
 
-    if (account.username.trim() === '') {
-      errors.username = 'Username is required.';
-    }
-    if (account.password.trim() === '') {
-      errors.password = 'Password is required.';
-    }
+  validateProperty = ({ name, value }) => {
+    const { error } =
+      name === 'username'
+        ? this.usernameSchema.validate({ [name]: value })
+        : this.passwordSchema.validate({ [name]: value });
 
-    return Object.keys(errors).length === 0 ? null : errors;
+    return error ? error.details[0].message : null;
   };
 
   handleSubmit = e => {
@@ -34,9 +74,16 @@ export default class LoginForm extends Component {
   };
 
   handleChange = ({ currentTarget: input }) => {
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateProperty(input);
+
+    if (errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+
     const account = { ...this.state.account };
     account[input.name] = input.value;
-    this.setState({ account });
+
+    this.setState({ account, errors });
   };
 
   render() {
