@@ -4,18 +4,9 @@ import Input from './common/Input';
 
 export default class LoginForm extends Component {
   state = {
-    account: { username: '', password: '' },
+    data: { username: '', password: '' },
     errors: {}
   };
-
-  // schema = Joi.object({
-  //   username: Joi.string()
-  //     .required()
-  //     .label('Username'),
-  //   password: Joi.string()
-  //     .required()
-  //     .label('Password')
-  // });
 
   usernameSchema = Joi.object({
     username: Joi.string()
@@ -32,9 +23,9 @@ export default class LoginForm extends Component {
   // Although the concatenation statement can be used on its own
   // I prefer to save it in this variable for legibility.
   combinedSchema = this.usernameSchema.concat(this.passwordSchema);
-
+  
   validate = () => {
-    const { username, password } = this.state.account;
+    const { username, password } = this.state.data;
     const options = { abortEarly: false };
     const { error } = this.combinedSchema.validate(
       {
@@ -71,6 +62,7 @@ export default class LoginForm extends Component {
 
     this.setState({ errors: errors || {} });
     if (errors) return;
+
     // call server
     console.log('submitted');
   };
@@ -82,14 +74,14 @@ export default class LoginForm extends Component {
     if (errorMessage) errors[input.name] = errorMessage;
     else delete errors[input.name];
 
-    const account = { ...this.state.account };
-    account[input.name] = input.value;
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
 
-    this.setState({ account, errors });
+    this.setState({ data, errors });
   };
 
   render() {
-    const { account, errors } = this.state;
+    const { data, errors } = this.state;
     return (
       <div>
         <h1>Login</h1>
@@ -97,22 +89,21 @@ export default class LoginForm extends Component {
         <form onSubmit={this.handleSubmit}>
           <Input
             name="username"
-            value={account.username}
+            value={data.username}
             label="Username"
             onChange={this.handleChange}
             error={errors.username}
           />
           <Input
             name="password"
-            value={account.password}
+            value={data.password}
             label="Password"
             onChange={this.handleChange}
             error={errors.password}
           />
-          <button 
-          disabled={this.validate()}
-          className="btn btn-primary"
-          >Login</button>
+          <button disabled={this.validate()} className="btn btn-primary">
+            Login
+          </button>
         </form>
       </div>
     );
